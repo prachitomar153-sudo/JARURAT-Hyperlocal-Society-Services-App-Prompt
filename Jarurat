@@ -1,0 +1,516 @@
+import { useState, useEffect } from "react";
+
+const services = [
+  { id: 1, icon: "🔧", name: "Plumber", price: "₹199", rating: 4.8, available: true, category: "Home Repair", color: "#1a56db" },
+  { id: 2, icon: "⚡", name: "Electrician", price: "₹249", rating: 4.9, available: true, category: "Home Repair", color: "#e74c3c" },
+  { id: 3, icon: "🪚", name: "Carpenter", price: "₹299", rating: 4.7, available: true, category: "Home Repair", color: "#8e44ad" },
+  { id: 4, icon: "🌿", name: "Gardener", price: "₹149", rating: 4.6, available: true, category: "Outdoor", color: "#27ae60" },
+  { id: 5, icon: "🧹", name: "House Cleaning", price: "₹399", rating: 4.9, available: true, category: "Cleaning", color: "#16a085" },
+  { id: 6, icon: "👩", name: "Maid Service", price: "₹199", rating: 4.7, available: false, category: "Cleaning", color: "#e67e22" },
+  { id: 7, icon: "❄️", name: "AC Repair", price: "₹449", rating: 4.8, available: true, category: "Appliance", color: "#2980b9" },
+  { id: 8, icon: "💧", name: "RO Service", price: "₹299", rating: 4.6, available: true, category: "Appliance", color: "#1abc9c" },
+  { id: 9, icon: "🎨", name: "Painter", price: "₹599", rating: 4.5, available: true, category: "Home Repair", color: "#f39c12" },
+  { id: 10, icon: "🚗", name: "Driver", price: "₹299", rating: 4.8, available: true, category: "Transport", color: "#34495e" },
+  { id: 11, icon: "👨‍🍳", name: "Cook", price: "₹349", rating: 4.9, available: true, category: "Food", color: "#e74c3c" },
+  { id: 12, icon: "👕", name: "Laundry", price: "₹99", rating: 4.7, available: true, category: "Cleaning", color: "#9b59b6" },
+  { id: 13, icon: "🛒", name: "Grocery Delivery", price: "₹49", rating: 4.8, available: true, category: "Delivery", color: "#27ae60" },
+  { id: 14, icon: "🥛", name: "Milk Delivery", price: "₹0", rating: 4.9, available: true, category: "Delivery", color: "#3498db" },
+  { id: 15, icon: "🚿", name: "Water Supplier", price: "₹149", rating: 4.6, available: true, category: "Delivery", color: "#1abc9c" },
+  { id: 16, icon: "🔥", name: "Gas Delivery", price: "₹850", rating: 4.7, available: false, category: "Delivery", color: "#e74c3c" },
+  { id: 17, icon: "🪲", name: "Pest Control", price: "₹499", rating: 4.8, available: true, category: "Home Care", color: "#8e44ad" },
+  { id: 18, icon: "📚", name: "Tutor", price: "₹399", rating: 4.9, available: true, category: "Education", color: "#2c3e50" },
+  { id: 19, icon: "💪", name: "Gym Trainer", price: "₹699", rating: 4.8, available: true, category: "Wellness", color: "#e67e22" },
+  { id: 20, icon: "🧘", name: "Yoga Teacher", price: "₹499", rating: 4.9, available: true, category: "Wellness", color: "#27ae60" },
+  { id: 21, icon: "🐾", name: "Pet Care", price: "₹299", rating: 4.7, available: true, category: "Pet", color: "#f39c12" },
+  { id: 22, icon: "🚑", name: "Ambulance", price: "Call", rating: 4.9, available: true, category: "Emergency", color: "#e74c3c" },
+  { id: 23, icon: "👶", name: "Babysitter", price: "₹349", rating: 4.8, available: true, category: "Care", color: "#e91e8c" },
+  { id: 24, icon: "📶", name: "WiFi Technician", price: "₹249", rating: 4.6, available: true, category: "Tech", color: "#1a56db" },
+];
+
+const providers = [
+  { id: 1, name: "Ramesh Kumar", service: "Plumber", exp: "8 yrs", rating: 4.9, reviews: 234, price: "₹199/hr", avatar: "RK", color: "#1a56db", skills: ["Pipe Fitting", "Leak Repair", "Installation"], avail: "Available Now" },
+  { id: 2, name: "Suresh Verma", service: "Electrician", exp: "12 yrs", rating: 4.8, reviews: 189, price: "₹249/hr", avatar: "SV", color: "#e74c3c", skills: ["Wiring", "MCB Repair", "Fan Installation"], avail: "Available in 1 hr" },
+  { id: 3, name: "Priya Sharma", service: "Maid Service", exp: "5 yrs", rating: 4.9, reviews: 312, price: "₹199/hr", avatar: "PS", color: "#27ae60", skills: ["Deep Cleaning", "Laundry", "Cooking"], avail: "Available Now" },
+  { id: 4, name: "Dinesh Rajput", service: "Carpenter", exp: "15 yrs", rating: 4.7, reviews: 156, price: "₹299/hr", avatar: "DR", color: "#8e44ad", skills: ["Furniture", "Door Fitting", "Polishing"], avail: "Available Tomorrow" },
+];
+
+const emergencyServices = [
+  { icon: "⚡", label: "Urgent Electrician", color: "#e74c3c", bg: "#fff5f5" },
+  { icon: "💧", label: "Water Leakage", color: "#1a56db", bg: "#f0f7ff" },
+  { icon: "🚑", label: "Ambulance", color: "#e74c3c", bg: "#fff5f5" },
+  { icon: "🏥", label: "Doctor on Call", color: "#27ae60", bg: "#f0fff4" },
+  { icon: "🛡️", label: "Security Help", color: "#8e44ad", bg: "#faf5ff" },
+];
+
+const announcements = [
+  { id: 1, title: "Water Supply Shut – 10am to 2pm Today", time: "2 hrs ago", type: "alert", icon: "💧" },
+  { id: 2, title: "Society Meeting – 7th June, 6PM at Club House", time: "1 day ago", type: "event", icon: "📋" },
+  { id: 3, title: "Found: Black Wallet near Gate 2", time: "3 hrs ago", type: "lost", icon: "👝" },
+  { id: 4, title: "Diwali Event – Register by 30 May", time: "5 hrs ago", type: "event", icon: "🎆" },
+];
+
+const categories = ["All", "Home Repair", "Cleaning", "Delivery", "Wellness", "Education", "Emergency", "Tech"];
+
+export default function JaruratApp() {
+  const [screen, setScreen] = useState("home");
+  const [activeTab, setScreen2] = useState("home");
+  const [selectedService, setSelectedService] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [bookingStep, setBookingStep] = useState(1);
+  const [bookingDate, setBookingDate] = useState("");
+  const [bookingTime, setBookingTime] = useState("");
+  const [bookingNote, setBookingNote] = useState("");
+  const [bookingDone, setBookingDone] = useState(false);
+  const [chatInput, setChatInput] = useState("");
+  const [messages, setMessages] = useState([
+    { from: "provider", text: "Namaste! How can I help you today?", time: "10:02 AM" }
+  ]);
+  const [sosPressed, setSosPressed] = useState(false);
+
+  const nav = (s) => { setScreen(s); setScreen2(s); };
+
+  const filteredServices = services.filter(s => {
+    const matchCat = activeCategory === "All" || s.category === activeCategory;
+    const matchSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCat && matchSearch;
+  });
+
+  const sendChat = () => {
+    if (!chatInput.trim()) return;
+    const newMsgs = [...messages, { from: "user", text: chatInput, time: "now" }];
+    setMessages(newMsgs);
+    setChatInput("");
+    setTimeout(() => {
+      setMessages(m => [...m, { from: "provider", text: "I'll be there in 20 minutes. Please keep the area accessible.", time: "now" }]);
+    }, 1000);
+  };
+
+  const confirmBooking = () => {
+    if (bookingStep < 3) { setBookingStep(bookingStep + 1); return; }
+    setBookingDone(true);
+    setTimeout(() => { setBookingDone(false); setBookingStep(1); nav("home"); }, 2500);
+  };
+
+  return (
+    <div style={{ fontFamily: "'DM Sans', 'Segoe UI', sans-serif", background: "#f8f9fb", minHeight: "100vh", maxWidth: 400, margin: "0 auto", position: "relative", overflowX: "hidden" }}>
+
+      {/* SOS Overlay */}
+      {sosPressed && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(231,76,60,0.97)", zIndex: 999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20 }}>
+          <div style={{ fontSize: 64 }}>🆘</div>
+          <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>SOS Activated!</div>
+          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, textAlign: "center", maxWidth: 260 }}>Alert sent to Society Security & Emergency Contacts</div>
+          <button onClick={() => setSosPressed(false)} style={{ marginTop: 20, background: "#fff", color: "#e74c3c", border: "none", borderRadius: 30, padding: "12px 36px", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>Cancel SOS</button>
+        </div>
+      )}
+
+      {/* Booking Done Overlay */}
+      {bookingDone && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(255,255,255,0.97)", zIndex: 99, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+          <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#e8f8f0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>✅</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: "#1a1a2e" }}>Booking Confirmed!</div>
+          <div style={{ color: "#888", fontSize: 14 }}>Your provider will reach soon.</div>
+        </div>
+      )}
+
+      {/* — LANDING SCREEN — */}
+      {screen === "landing" && (
+        <div style={{ minHeight: "100vh", background: "linear-gradient(160deg, #0f2027, #203a43, #2c5364)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32, gap: 28 }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 56, marginBottom: 8 }}>🏘️</div>
+            <div style={{ fontSize: 38, fontWeight: 800, color: "#fff", letterSpacing: -1 }}>JARURAT</div>
+            <div style={{ color: "#a8d8ea", fontSize: 15, marginTop: 6, fontStyle: "italic" }}>Har Zarurat Ka Solution</div>
+          </div>
+          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 14, textAlign: "center", lineHeight: 1.7, maxWidth: 280 }}>
+            Connecting society residents with trusted local service providers — instantly.
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%", maxWidth: 320 }}>
+            <button onClick={() => nav("home")} style={{ background: "#10b981", color: "#fff", border: "none", borderRadius: 14, padding: "16px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", letterSpacing: 0.3 }}>
+              🔍 Find Services
+            </button>
+            <button onClick={() => nav("home")} style={{ background: "rgba(255,255,255,0.1)", color: "#fff", border: "1.5px solid rgba(255,255,255,0.25)", borderRadius: 14, padding: "16px 0", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>
+              🛠️ Become a Provider
+            </button>
+          </div>
+          <div style={{ display: "flex", gap: 24, marginTop: 8 }}>
+            {["500+\nProviders", "4.8★\nRating", "50+\nServices"].map((stat, i) => (
+              <div key={i} style={{ textAlign: "center", color: "#fff" }}>
+                <div style={{ fontSize: 18, fontWeight: 700 }}>{stat.split("\n")[0]}</div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>{stat.split("\n")[1]}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* — HOME SCREEN — */}
+      {screen === "home" && (
+        <div style={{ paddingBottom: 80 }}>
+          {/* Header */}
+          <div style={{ background: "linear-gradient(135deg, #0f2027 0%, #203a43 60%, #1a56db 100%)", padding: "20px 20px 28px", borderRadius: "0 0 28px 28px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div>
+                <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Good morning 👋</div>
+                <div style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>Sector 14, Tower B</div>
+              </div>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <button onClick={() => setSosPressed(true)} style={{ background: "#e74c3c", color: "#fff", border: "none", borderRadius: 20, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>🆘 SOS</button>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#10b981", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, cursor: "pointer" }}>A</div>
+              </div>
+            </div>
+            {/* Search */}
+            <div style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(10px)", borderRadius: 14, display: "flex", alignItems: "center", padding: "10px 16px", gap: 10, border: "1px solid rgba(255,255,255,0.2)" }}>
+              <span style={{ fontSize: 18 }}>🔍</span>
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search for any service..." style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 14, flex: 1 }} />
+              {searchQuery && <span onClick={() => setSearchQuery("")} style={{ color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: 18 }}>✕</span>}
+            </div>
+          </div>
+
+          <div style={{ padding: "0 16px" }}>
+
+            {/* Emergency Strip */}
+            <div style={{ marginTop: 20, marginBottom: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>⚠️ Emergency Services</span>
+                <span style={{ color: "#e74c3c", fontSize: 12, fontWeight: 600 }}>LIVE</span>
+              </div>
+              <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4 }}>
+                {emergencyServices.map((e, i) => (
+                  <div key={i} style={{ minWidth: 90, background: e.bg, border: `1.5px solid ${e.color}22`, borderRadius: 14, padding: "12px 8px", textAlign: "center", cursor: "pointer", flexShrink: 0 }}>
+                    <div style={{ fontSize: 22 }}>{e.icon}</div>
+                    <div style={{ fontSize: 10, color: e.color, fontWeight: 600, marginTop: 4, lineHeight: 1.2 }}>{e.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div style={{ marginTop: 20, marginBottom: 4 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 10 }}>All Services</div>
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                {categories.map(cat => (
+                  <button key={cat} onClick={() => setActiveCategory(cat)} style={{ flexShrink: 0, background: activeCategory === cat ? "#1a56db" : "#fff", color: activeCategory === cat ? "#fff" : "#555", border: `1.5px solid ${activeCategory === cat ? "#1a56db" : "#e8e8f0"}`, borderRadius: 20, padding: "6px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Services Grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 14 }}>
+              {filteredServices.map(s => (
+                <div key={s.id} onClick={() => { setSelectedService(s); nav("service"); }} style={{ background: "#fff", borderRadius: 16, padding: "14px 12px", cursor: "pointer", border: "1.5px solid #f0f0f8", transition: "all 0.2s" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                    <div style={{ fontSize: 28 }}>{s.icon}</div>
+                    <span style={{ background: s.available ? "#e8f8f0" : "#fff0f0", color: s.available ? "#10b981" : "#e74c3c", fontSize: 9, fontWeight: 700, borderRadius: 8, padding: "3px 7px" }}>
+                      {s.available ? "Available" : "Busy"}
+                    </span>
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: "#1a1a2e", marginBottom: 2 }}>{s.name}</div>
+                  <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>{s.category}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontWeight: 700, color: s.color || "#1a56db", fontSize: 13 }}>from {s.price}</span>
+                    <span style={{ fontSize: 11, color: "#f39c12" }}>⭐ {s.rating}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Top Rated Providers */}
+            <div style={{ marginTop: 24 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                <span style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>⭐ Top Rated Providers</span>
+                <span style={{ color: "#1a56db", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>See All</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {providers.map(p => (
+                  <div key={p.id} onClick={() => { setSelectedProvider(p); nav("provider"); }} style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", border: "1.5px solid #f0f0f8" }}>
+                    <div style={{ width: 48, height: 48, borderRadius: "50%", background: `${p.color}22`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: p.color, fontSize: 16, flexShrink: 0 }}>{p.avatar}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>{p.name}</div>
+                      <div style={{ fontSize: 12, color: "#888" }}>{p.service} · {p.exp}</div>
+                      <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                        <span style={{ fontSize: 11, color: "#f39c12" }}>⭐ {p.rating}</span>
+                        <span style={{ fontSize: 11, color: "#aaa" }}>({p.reviews} reviews)</span>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontWeight: 700, color: "#1a56db", fontSize: 13 }}>{p.price}</div>
+                      <div style={{ fontSize: 10, color: "#10b981", marginTop: 2, fontWeight: 600 }}>{p.avail.includes("Now") ? "✓ Now" : "⏱ Soon"}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* — SERVICE DETAIL — */}
+      {screen === "service" && selectedService && (
+        <div style={{ paddingBottom: 90 }}>
+          <div style={{ background: `linear-gradient(135deg, ${selectedService.color || "#1a56db"}dd, ${selectedService.color || "#1a56db"}99)`, padding: "24px 20px 32px", borderRadius: "0 0 28px 28px" }}>
+            <button onClick={() => nav("home")} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 10, padding: "8px 14px", cursor: "pointer", marginBottom: 20, fontSize: 14 }}>← Back</button>
+            <div style={{ fontSize: 56, marginBottom: 12 }}>{selectedService.icon}</div>
+            <div style={{ fontSize: 26, fontWeight: 800, color: "#fff" }}>{selectedService.name}</div>
+            <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 4 }}>Starting from {selectedService.price}</div>
+            <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+              <span style={{ background: "rgba(255,255,255,0.2)", color: "#fff", fontSize: 12, borderRadius: 10, padding: "4px 10px" }}>⭐ {selectedService.rating}</span>
+              <span style={{ background: selectedService.available ? "rgba(16,185,129,0.3)" : "rgba(231,76,60,0.3)", color: "#fff", fontSize: 12, borderRadius: 10, padding: "4px 10px" }}>{selectedService.available ? "✓ Available Now" : "Currently Busy"}</span>
+            </div>
+          </div>
+          <div style={{ padding: "20px 16px" }}>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>Available Providers</div>
+            {providers.filter(() => Math.random() > 0.3).concat(providers[0]).slice(0, 3).map((p, i) => (
+              <div key={i} onClick={() => { setSelectedProvider(p); nav("provider"); }} style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", border: "1.5px solid #f0f0f8", marginBottom: 12 }}>
+                <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${p.color}22`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: p.color, flexShrink: 0 }}>{p.avatar}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e" }}>{p.name}</div>
+                  <div style={{ fontSize: 11, color: "#888" }}>{p.exp} experience</div>
+                  <div style={{ fontSize: 11, color: "#f39c12", marginTop: 2 }}>⭐ {p.rating} ({p.reviews})</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, color: "#1a56db", fontSize: 13 }}>{p.price}</div>
+                  <div style={{ fontSize: 10, color: "#10b981", marginTop: 2 }}>Available</div>
+                </div>
+              </div>
+            ))}
+            <button onClick={() => { setSelectedProvider(providers[0]); nav("booking"); }} style={{ width: "100%", background: "#1a56db", color: "#fff", border: "none", borderRadius: 14, padding: "16px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", marginTop: 8 }}>
+              Book Now
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* — PROVIDER DETAIL — */}
+      {screen === "provider" && selectedProvider && (
+        <div style={{ paddingBottom: 90 }}>
+          <div style={{ background: `linear-gradient(135deg, ${selectedProvider.color}dd, ${selectedProvider.color}88)`, padding: "24px 20px 32px", borderRadius: "0 0 28px 28px" }}>
+            <button onClick={() => nav("home")} style={{ background: "rgba(255,255,255,0.2)", border: "none", color: "#fff", borderRadius: 10, padding: "8px 14px", cursor: "pointer", marginBottom: 20, fontSize: 14 }}>← Back</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 800, color: "#fff", border: "3px solid rgba(255,255,255,0.6)" }}>{selectedProvider.avatar}</div>
+              <div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#fff" }}>{selectedProvider.name}</div>
+                <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 14 }}>{selectedProvider.service}</div>
+                <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
+                  <span style={{ background: "rgba(255,255,255,0.2)", color: "#fff", fontSize: 11, borderRadius: 8, padding: "3px 9px" }}>⭐ {selectedProvider.rating}</span>
+                  <span style={{ background: "rgba(255,255,255,0.2)", color: "#fff", fontSize: 11, borderRadius: 8, padding: "3px 9px" }}>{selectedProvider.exp}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style={{ padding: "20px 16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
+              {[["⭐", selectedProvider.rating, "Rating"], ["💬", selectedProvider.reviews, "Reviews"], ["🕐", selectedProvider.exp, "Exp"]].map(([ico, val, lbl]) => (
+                <div key={lbl} style={{ background: "#fff", borderRadius: 14, padding: "12px 8px", textAlign: "center", border: "1.5px solid #f0f0f8" }}>
+                  <div style={{ fontSize: 20 }}>{ico}</div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "#1a1a2e", marginTop: 4 }}>{val}</div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>{lbl}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginBottom: 14, border: "1.5px solid #f0f0f8" }}>
+              <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 14 }}>Skills</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {selectedProvider.skills.map(sk => (
+                  <span key={sk} style={{ background: "#eef2ff", color: "#1a56db", fontSize: 12, borderRadius: 8, padding: "4px 10px", fontWeight: 600 }}>{sk}</span>
+                ))}
+              </div>
+            </div>
+            <div style={{ background: "#e8f8f0", borderRadius: 14, padding: "10px 16px", marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 16 }}>⏰</span>
+              <span style={{ color: "#10b981", fontWeight: 600, fontSize: 13 }}>{selectedProvider.avail}</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <button onClick={() => nav("chat")} style={{ background: "#25D366", color: "#fff", border: "none", borderRadius: 14, padding: "14px 0", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>💬 Chat</button>
+              <button onClick={() => nav("booking")} style={{ background: "#1a56db", color: "#fff", border: "none", borderRadius: 14, padding: "14px 0", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Book Now</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* — BOOKING — */}
+      {screen === "booking" && (
+        <div style={{ padding: "20px 16px", paddingBottom: 90 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+            <button onClick={() => nav("home")} style={{ background: "#f0f0f8", border: "none", borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontSize: 14 }}>←</button>
+            <span style={{ fontWeight: 700, fontSize: 18, color: "#1a1a2e" }}>Book Service</span>
+          </div>
+
+          {/* Progress */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 28, gap: 0 }}>
+            {["Select Date", "Add Address", "Confirm"].map((step, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", flex: 1 }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: "50%", background: bookingStep > i ? "#1a56db" : bookingStep === i + 1 ? "#1a56db" : "#e0e0ef", display: "flex", alignItems: "center", justifyContent: "center", color: bookingStep >= i + 1 ? "#fff" : "#aaa", fontWeight: 700, fontSize: 13 }}>{i + 1}</div>
+                  <div style={{ fontSize: 10, color: bookingStep >= i + 1 ? "#1a56db" : "#aaa", marginTop: 4, textAlign: "center" }}>{step}</div>
+                </div>
+                {i < 2 && <div style={{ height: 2, flex: 0.5, background: bookingStep > i + 1 ? "#1a56db" : "#e0e0ef", marginBottom: 16 }} />}
+              </div>
+            ))}
+          </div>
+
+          {bookingStep === 1 && (
+            <div>
+              <div style={{ fontWeight: 600, color: "#444", marginBottom: 10 }}>Select Date</div>
+              <input type="date" value={bookingDate} onChange={e => setBookingDate(e.target.value)} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: "1.5px solid #e0e0ef", fontSize: 15, outline: "none", boxSizing: "border-box", marginBottom: 20 }} />
+              <div style={{ fontWeight: 600, color: "#444", marginBottom: 10 }}>Select Time</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                {["9:00 AM", "11:00 AM", "1:00 PM", "3:00 PM", "5:00 PM", "7:00 PM"].map(t => (
+                  <button key={t} onClick={() => setBookingTime(t)} style={{ background: bookingTime === t ? "#1a56db" : "#f4f4fc", color: bookingTime === t ? "#fff" : "#555", border: "none", borderRadius: 12, padding: "10px 0", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>{t}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {bookingStep === 2 && (
+            <div>
+              <div style={{ fontWeight: 600, color: "#444", marginBottom: 10 }}>Your Address</div>
+              <textarea placeholder="Flat No., Block, Society Name..." rows={3} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: "1.5px solid #e0e0ef", fontSize: 14, outline: "none", resize: "none", boxSizing: "border-box", marginBottom: 16, fontFamily: "inherit" }} />
+              <div style={{ fontWeight: 600, color: "#444", marginBottom: 10 }}>Additional Notes</div>
+              <textarea value={bookingNote} onChange={e => setBookingNote(e.target.value)} placeholder="Any specific instructions for the provider..." rows={3} style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: "1.5px solid #e0e0ef", fontSize: 14, outline: "none", resize: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+            </div>
+          )}
+
+          {bookingStep === 3 && (
+            <div>
+              <div style={{ background: "#fff", borderRadius: 18, border: "1.5px solid #e8e8f8", padding: 20, marginBottom: 16 }}>
+                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 14, color: "#1a1a2e" }}>Booking Summary</div>
+                {[["Service", selectedService?.name || "House Cleaning"], ["Provider", selectedProvider?.name || "Ramesh Kumar"], ["Date", bookingDate || "Tomorrow"], ["Time", bookingTime || "11:00 AM"], ["Rate", selectedProvider?.price || "₹199/hr"]].map(([k, v]) => (
+                  <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 14 }}>
+                    <span style={{ color: "#888" }}>{k}</span>
+                    <span style={{ fontWeight: 600, color: "#1a1a2e" }}>{v}</span>
+                  </div>
+                ))}
+                <div style={{ borderTop: "1px solid #f0f0f8", marginTop: 10, paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontWeight: 700, color: "#1a1a2e" }}>Est. Total</span>
+                  <span style={{ fontWeight: 800, color: "#1a56db", fontSize: 18 }}>₹399</span>
+                </div>
+              </div>
+              <div style={{ fontWeight: 600, color: "#444", marginBottom: 10 }}>Payment Method</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {[["💳", "UPI"], ["🟢", "GPay"], ["🔵", "PhonePe"], ["💰", "Wallet"]].map(([ico, label]) => (
+                  <div key={label} style={{ background: label === "UPI" ? "#eef2ff" : "#fff", border: label === "UPI" ? "2px solid #1a56db" : "1.5px solid #e8e8f8", borderRadius: 12, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                    <span style={{ fontSize: 20 }}>{ico}</span>
+                    <span style={{ fontWeight: 600, fontSize: 13, color: label === "UPI" ? "#1a56db" : "#555" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button onClick={confirmBooking} style={{ width: "100%", background: "#1a56db", color: "#fff", border: "none", borderRadius: 14, padding: "16px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", marginTop: 24 }}>
+            {bookingStep < 3 ? "Continue →" : "Confirm & Pay ₹399"}
+          </button>
+        </div>
+      )}
+
+      {/* — CHAT — */}
+      {screen === "chat" && (
+        <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+          <div style={{ background: "#fff", padding: "16px 16px 14px", borderBottom: "1px solid #f0f0f8", display: "flex", alignItems: "center", gap: 14 }}>
+            <button onClick={() => nav("home")} style={{ background: "#f4f4fc", border: "none", borderRadius: 10, padding: "7px 12px", cursor: "pointer", fontSize: 14 }}>←</button>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#eef2ff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "#1a56db", fontSize: 14 }}>RK</div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>Ramesh Kumar</div>
+              <div style={{ fontSize: 11, color: "#10b981" }}>● Online</div>
+            </div>
+          </div>
+          <div style={{ flex: 1, padding: 16, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12, background: "#f8f9fb" }}>
+            {messages.map((m, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: m.from === "user" ? "flex-end" : "flex-start" }}>
+                <div style={{ background: m.from === "user" ? "#1a56db" : "#fff", color: m.from === "user" ? "#fff" : "#1a1a2e", borderRadius: m.from === "user" ? "18px 18px 4px 18px" : "18px 18px 18px 4px", padding: "10px 14px", maxWidth: "75%", fontSize: 14, lineHeight: 1.5, border: m.from !== "user" ? "1px solid #f0f0f8" : "none" }}>{m.text}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#fff", padding: "12px 16px", borderTop: "1px solid #f0f0f8", display: "flex", gap: 10 }}>
+            <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key === "Enter" && sendChat()} placeholder="Type a message..." style={{ flex: 1, background: "#f4f4fc", border: "none", borderRadius: 12, padding: "10px 14px", fontSize: 14, outline: "none" }} />
+            <button onClick={sendChat} style={{ background: "#1a56db", color: "#fff", border: "none", borderRadius: 12, width: 44, height: 44, fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>➤</button>
+          </div>
+        </div>
+      )}
+
+      {/* — COMMUNITY — */}
+      {screen === "community" && (
+        <div style={{ padding: "20px 16px", paddingBottom: 80 }}>
+          <div style={{ fontWeight: 800, fontSize: 20, color: "#1a1a2e", marginBottom: 20 }}>Community 🏘️</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {announcements.map(a => (
+              <div key={a.id} style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", border: "1.5px solid #f0f0f8", display: "flex", gap: 14, alignItems: "flex-start" }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: a.type === "alert" ? "#fff0f0" : a.type === "event" ? "#f0f7ff" : "#fff8e6", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{a.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: "#1a1a2e", lineHeight: 1.4 }}>{a.title}</div>
+                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>{a.time}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 16, marginTop: 20, border: "1.5px solid #f0f0f8" }}>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>📊 Community Poll</div>
+            <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 14, color: "#444" }}>Should we add a new gym in the society?</div>
+            {[["Yes, definitely!", 72], ["No, not needed", 18], ["Maybe later", 10]].map(([opt, pct]) => (
+              <div key={opt} style={{ marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 4 }}>
+                  <span style={{ color: "#444" }}>{opt}</span>
+                  <span style={{ color: "#1a56db", fontWeight: 700 }}>{pct}%</span>
+                </div>
+                <div style={{ background: "#f0f0f8", borderRadius: 8, height: 8, overflow: "hidden" }}>
+                  <div style={{ background: "#1a56db", height: "100%", width: `${pct}%`, borderRadius: 8 }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* — MARKETPLACE — */}
+      {screen === "marketplace" && (
+        <div style={{ padding: "20px 16px", paddingBottom: 80 }}>
+          <div style={{ fontWeight: 800, fontSize: 20, color: "#1a1a2e", marginBottom: 20 }}>Marketplace 🛍️</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {[
+              { emoji: "🛋️", title: "Sofa Set (3+2)", price: "₹8,000", seller: "Flat 301", tag: "Furniture" },
+              { emoji: "📺", title: "LED TV 43\"", price: "₹12,500", seller: "Flat 204", tag: "Electronics" },
+              { emoji: "🚲", title: "Cycle – Hero", price: "₹2,500", seller: "Flat 108", tag: "Sports" },
+              { emoji: "🧊", title: "Refrigerator 220L", price: "₹7,000", seller: "Flat 412", tag: "Appliance" },
+              { emoji: "📚", title: "UPSC Books Set", price: "₹1,200", seller: "Flat 502", tag: "Books" },
+              { emoji: "🪑", title: "Study Table + Chair", price: "₹3,500", seller: "Flat 203", tag: "Furniture" },
+            ].map((item, i) => (
+              <div key={i} style={{ background: "#fff", borderRadius: 16, overflow: "hidden", border: "1.5px solid #f0f0f8", cursor: "pointer" }}>
+                <div style={{ background: "#f4f4fc", height: 90, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 44 }}>{item.emoji}</div>
+                <div style={{ padding: "10px 12px" }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: "#1a1a2e", marginBottom: 2 }}>{item.title}</div>
+                  <div style={{ fontSize: 11, color: "#aaa", marginBottom: 6 }}>By {item.seller}</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontWeight: 800, color: "#1a56db", fontSize: 15 }}>{item.price}</span>
+                    <span style={{ fontSize: 10, background: "#eef2ff", color: "#1a56db", padding: "2px 7px", borderRadius: 6, fontWeight: 600 }}>{item.tag}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* — BOTTOM NAV — */}
+      {!["landing"].includes(screen) && (
+        <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 400, background: "rgba(255,255,255,0.97)", backdropFilter: "blur(20px)", borderTop: "1px solid #f0f0f8", display: "flex", padding: "8px 0 12px", zIndex: 50 }}>
+          {[
+            { id: "home", icon: "🏠", label: "Home" },
+            { id: "marketplace", icon: "🛍️", label: "Market" },
+            { id: "booking", icon: "📅", label: "Book" },
+            { id: "community", icon: "🏘️", label: "Society" },
+            { id: "chat", icon: "💬", label: "Chat" },
+          ].map(tab => (
+            <button key={tab.id} onClick={() => nav(tab.id)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "4px 0" }}>
+              <span style={{ fontSize: 20, filter: screen === tab.id ? "none" : "grayscale(1) opacity(0.5)" }}>{tab.icon}</span>
+              <span style={{ fontSize: 10, color: screen === tab.id ? "#1a56db" : "#aaa", fontWeight: screen === tab.id ? 700 : 400 }}>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+} 
